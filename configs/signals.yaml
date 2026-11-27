@@ -1,0 +1,36 @@
+channels:
+  - id: throttle_position
+    unit: "%"
+    range: [0, 100]
+    sample_rate_hz: 100
+    zscore_threshold: 3.5
+
+  - id: engine_rpm
+    unit: "rpm"
+    range: [0, 8000]
+    sample_rate_hz: 100
+    zscore_threshold: 3.0
+
+  - id: coolant_temp
+    unit: "°C"
+    range: [-40, 130]
+    sample_rate_hz: 10
+    zscore_threshold: 4.0
+
+  - id: battery_voltage
+    unit: "V"
+    range: [9.0, 16.0]
+    sample_rate_hz: 50
+    zscore_threshold: 3.0
+
+  - id: map_sensor
+    unit: "kPa"
+    range: [20, 250]
+    sample_rate_hz: 100
+    zscore_threshold: 3.5
+
+  - id: lambda_sensor
+    unit: "lambda"
+    range: [0.5, 2.0]
+    sample_rate_hz: 50
+    zscore_threshold: 3.0

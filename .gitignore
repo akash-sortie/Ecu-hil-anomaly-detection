@@ -1,0 +1,26 @@
+# Byte-compiled / virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+
+# Experiment tracking & local evaluation outputs
+mlruns/
+eval_outputs/
+
+# Large data & model artifacts (remove lines if intentionally committing small sample files)
+data/raw/*.csv
+data/features/*.csv
+data/processed/*.npy
+data/processed/*.pkl
+mlflow/models/*.pkl
+mlflow/models/*.onnx
+mlflow/models/*.onnx.data
+
+# OS & editor files
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json

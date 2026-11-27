@@ -1,0 +1,24 @@
+lstm_autoencoder:
+  seq_len: 50           # 50 × 10ms = 500ms window
+  n_features: 6        # number of ECU signal channels
+  hidden_size: 64
+  num_layers: 2
+  dropout: 0.2
+  learning_rate: 0.001
+  batch_size: 64
+  epochs: 50
+  threshold_percentile: 95
+  device: "cuda"        # change to "cpu" if no GPU
+
+isolation_forest:
+  n_estimators: 200
+  contamination: 0.02   # expected 2% anomaly rate
+  random_state: 42
+  max_features: 0.8
+
+ensemble:
+  weights:
+    statistical: 0.2
+    isolation_forest: 0.3
+    lstm_autoencoder: 0.5
+  vote_threshold: 0.5
