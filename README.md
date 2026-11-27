@@ -1,24 +1,24 @@
 # ECU Telemetry Anomaly Detection & Diagnostics Pipeline
 
-An end-to-end time-series anomaly detection and diagnostics pipeline for **replayed ECU telemetry**[cite: 6, 7]. It combines an unsupervised **LSTM Autoencoder** (`50`-step sliding windows across `12` features)[cite: 6, 7], **FastAPI** serving, **InfluxDB** time-series storage, **Grafana** monitoring[cite: 11, 12, 13], and **Docker Compose** orchestration—evaluated against static rule, PCA, and Isolation Forest baselines on `100` injected fault episodes[cite: 6, 7].
+An end-to-end time-series anomaly detection and diagnostics pipeline for **replayed ECU telemetry**. It combines an unsupervised **LSTM Autoencoder** (`50`-step sliding windows across `12` features), **FastAPI** serving, **InfluxDB** time-series storage, **Grafana** monitoring, and **Docker Compose** orchestration—evaluated against static rule, PCA, and Isolation Forest baselines on `100` injected fault episodes.
 
-> **Honest Scope:** Telemetry is replayed from drive-cycle feature logs and evaluated with reproducible synthetic fault injection on a local Docker Compose stack—not a physical HIL bench or live factory-floor deployment[cite: 6, 7, 11, 12, 13].
+> **Honest Scope:** Telemetry is replayed from drive-cycle feature logs and evaluated with reproducible synthetic fault injection on a local Docker Compose stack—not a physical HIL bench or live factory-floor deployment.
 
 ---
 
 ## Problem Statement
 
-Static single-signal thresholds miss subtle cross-sensor faults and state-dependent anomalies (for example, elevated temperature alongside low/idle RPM when individual signals still sit near plausible operating ranges), while manual log review is slow during test runs[cite: 6, 7]. Training purely on healthy drive-cycle data allows an unsupervised sequence model to learn normal multi-channel temporal patterns and flag deviations without requiring labeled fault data upfront[cite: 6, 7].
+Static single-signal thresholds miss subtle cross-sensor faults and state-dependent anomalies (for example, elevated temperature alongside low/idle RPM when individual signals still sit near plausible operating ranges), while manual log review is slow during test runs. Training purely on healthy drive-cycle data allows an unsupervised sequence model to learn normal multi-channel temporal patterns and flag deviations without requiring labeled fault data upfront.
 
 ---
 
 ## Approach & System Architecture
 
-1. **Leak-Free Contiguous Splitting:** `data/features/baseline_features.csv` (`8,996` rows, `12` features, `50`-step windows, `10 Hz`) is split chronologically without random window shuffling into **Train** (`0:5397`, `5,397` rows, `60%`), **Validation** (`5397:7196`, `1,799` rows, `20%`), and **Test** (`7196:8996`, `1,800` rows, `20%`)[cite: 6, 7].
-2. **Unsupervised Sequence Modeling:** An **LSTM Autoencoder** reconstructs `50`-step windows across `12` ECU telemetry features (`throttle_position`, `engine_rpm`, `coolant_temp`, `battery_voltage`, `map_sensor`, and `lambda_sensor` mean/std channels)[cite: 6, 7].
-3. **Validation-Only Thresholding:** Thresholds (`Val P95 = 0.6378`, `Val P99 = 0.7337`, `Val Mean+3Std = 0.7431`) are derived strictly on healthy validation reconstruction errors rather than tuned on test faults[cite: 6, 7].
-4. **Root-Cause & Latency Diagnostics:** Per-feature reconstruction error ranks which signal deviated most during alerted windows, and episode evaluation tracks detection lag from fault onset to first alert[cite: 6, 7].
-5. **Local Containerized Monitoring:** Scored telemetry streams into **InfluxDB** and renders on **Grafana** via **Docker Compose**[cite: 11, 12, 13].
+1. **Leak-Free Contiguous Splitting:** `data/features/baseline_features.csv` (`8,996` rows, `12` features, `50`-step windows, `10 Hz`) is split chronologically without random window shuffling into **Train** (`0:5397`, `5,397` rows, `60%`), **Validation** (`5397:7196`, `1,799` rows, `20%`), and **Test** (`7196:8996`, `1,800` rows, `20%`).
+2. **Unsupervised Sequence Modeling:** An **LSTM Autoencoder** reconstructs `50`-step windows across `12` ECU telemetry features (`throttle_position`, `engine_rpm`, `coolant_temp`, `battery_voltage`, `map_sensor`, and `lambda_sensor` mean/std channels).
+3. **Validation-Only Thresholding:** Thresholds (`Val P95 = 0.6378`, `Val P99 = 0.7337`, `Val Mean+3Std = 0.7431`) are derived strictly on healthy validation reconstruction errors rather than tuned on test faults.
+4. **Root-Cause & Latency Diagnostics:** Per-feature reconstruction error ranks which signal deviated most during alerted windows, and episode evaluation tracks detection lag from fault onset to first alert.
+5. **Local Containerized Monitoring:** Scored telemetry streams into **InfluxDB** and renders on **Grafana** via **Docker Compose**.
 
 ---
 
